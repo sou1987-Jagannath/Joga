@@ -1,0 +1,24 @@
+az vm create --resource-group dwp-lab-rg --name dwp-p30-win --image MicrosoftWindowsDesktop:windows-11:win11-24h2-ent:latest --size Standard_B2ms --admin-username dwpadmin --admin-password 'DWPLab2024@Az' --location centralus --public-ip-sku Standard --os-disk-size-gb 128 --storage-sku StandardSSD_LRS --nsg-rule RDP --security-type TrustedLaunch --enable-secure-boot true --enable-vtpm true
+
+
+az group create --name dwp-lab-rg --location centralus
+
+
+{
+  "fqdns": "",
+  "id": "/subscriptions/9a89dd7c-2c36-41b4-9f7a-b7f73e94be56/resourceGroups/dwp-lab-rg/providers/Microsoft.Compute/virtualMachines/dwp-p30-win",
+  "location": "centralus",
+  "macAddress": "60-45-BD-31-FF-FA",
+  "powerState": "VM running",
+  "privateIpAddress": "10.0.0.4",
+  "publicIpAddress": "20.9.47.136",
+  "resourceGroup": "dwp-lab-rg"
+}
+
+az vm identity assign --resource-group dwp-lab-rg --name dwp-p30-win
+
+az vm extension set --resource-group dwp-lab-rg --vm-name dwp-p30-win --name AADLoginForWindows --publisher Microsoft.Azure.ActiveDirectory --version 2.0
+
+
+VM_ID=$(az vm show --resource-group dwp-lab-rg --name dwp-p30-win --query id --output tsv)
+az role assignment create --role "Virtual Machine Administrator Login" --assignee "p30@zippyops.in" --scope $VM_ID
